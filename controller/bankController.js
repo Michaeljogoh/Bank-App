@@ -13,7 +13,7 @@ const createAccount = async ({account_id , account_name , account_balance}) =>{
 }
 
 const deposit = async ({account_id , amount}) =>{
-    await client.query(`select account_balance from  account where account_id = $1`, [account_id])
+ const res =  await client.query(`select account_balance from  account where account_id = $1`, [account_id])
     const {account_balance} = parseFloat(res.rows[0].account_balance)
     const newBalance = account_balance + amount
 
@@ -25,7 +25,7 @@ const deposit = async ({account_id , amount}) =>{
     return res.status(400)
 }
 
-const withDraw = async ({account_id , amount}) =>{
+const withdraw = async ({account_id , amount}) =>{
      await client.query(`select account_balance from  account where account_id = $1`, [account_id])
     const {account_balance} = parseFloat(res.rows[0].account_balance)
     const newBalance = account_balance - amount
@@ -42,11 +42,20 @@ const tranfer = ({source_id , destination_id , amount}) =>{
     withDraw({ account_id : source_id , amount })
      deposit ({ account_id : destination_id , amount})
 
+}
 
+const balance = async ({account_id}) =>{
+   const newBalance =  await client.query(`select account_balance from  account where account_id = $1`, [account_id])
+   if(newBalance){
+    const {account_balance} = parseFloat(res.rows[0].account_balance)
+    return res.status(200).json({account_balance})
+
+   }
+  
 
 }
 
 
-module.exports = {createAccount , deposit , withDraw , tranfer}
+module.exports = {createAccount , deposit , withdraw , tranfer , balance}
 
 
