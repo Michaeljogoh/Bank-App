@@ -3,7 +3,7 @@ const client = require('../services/db');
 
 
 const createAccount = async ({account_id , account_name , account_balance}) =>{
- const newAccount = await client.query(`INSERT INTO account values ($1 , $2 , $3)` , [account_id , account_name , account_balance])
+ const newAccount = await client.query(`insert into account values ($1 , $2 , $3)` , [account_id , account_name , account_balance])
  if(newAccount){
     return res.status(200).json({newAccount})
  }
@@ -12,11 +12,39 @@ const createAccount = async ({account_id , account_name , account_balance}) =>{
 
 }
 
-const deposit = async (req , res) =>{}
+const deposit = async ({account_id , amount}) =>{
+    await client.query(`select account_balance from  account where account_id = $1`, [account_id])
+    const {account_balance} = parseFloat(res.rows[0].account_balance)
+    const newBalance = account_balance + amount
 
-const withDraw = () =>{}
+    const currentBalance = await client.query(`update account set balance =$1 where account_id = $2`, [newBalance, account_id])
 
-const tranfer = () =>{}
+    if(currentBalance){
+        return res.status(200).json(`Amount deposited ${amount} `)
+    }
+    return res.status(400)
+}
+
+const withDraw = async ({account_id , amount}) =>{
+     await client.query(`select account_balance from  account where account_id = $1`, [account_id])
+    const {account_balance} = parseFloat(res.rows[0].account_balance)
+    const newBalance = account_balance - amount
+
+    const currentBalance = await client.query(`update account set balance =$1 where account_id = $2`, [newBalance, account_id])
+
+    if(currentBalance){
+        return res.status(200).json(`Amount${amount} withdrawn`)
+    }
+    return res.status(400).json(`Insufficent balance ${amount}`)
+}
+
+const tranfer = ({source_id , destination_id , amount}) =>{
+    withDraw({ account_id : source_id , amount })
+     deposit ({ account_id : destination_id , amount})
+
+
+
+}
 
 
 module.exports = {createAccount , deposit , withDraw , tranfer}
