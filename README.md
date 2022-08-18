@@ -1,3 +1,11 @@
 # Bank-App
 
 This application simulates a simple banking application created with Node.js and MongoDB. Deposit and withdraw pretend money from your pretend bank account. Just a simple practice project!
+
+## Banking Application
+
+- As an user, I would like have create account facility
+- As an user, I would like to deposit money to my account
+- As an user. I would like to withdraw money from my account
+- As an user I would like to check balance of my account
+- As an user I would like to transfer money from my account to other account
